@@ -1,0 +1,34 @@
+version: "2"
+services:
+
+  logstash:
+    image: milobahg/logstash:latest
+    ports:
+      - "514:514/tcp"
+      - "514:514/udp"
+    networks:
+      - elk
+
+  kibana:
+    image: milobahg/kibana:latest
+    networks:
+      - elk
+
+  elastic:
+    image: milobahg/elastic:latest
+    networks:
+      - elk
+
+  proxy:
+    image: milobahg/proxy:latest
+    ports:
+      - "443:443"
+    environment:
+      - PROXY_PASS_HTTP='http://kibana:5601/'
+      - PROXY_PASS_SSL='http://kibana:5601/'
+    networks:
+      - elk
+
+networks:
+  elk:
+    driver: bridge
